@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>बिहार शिक्षक विवरणी एवं पदस्थापना / वेतन रजिस्टर</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:"Times New Roman",serif;margin:18px;color:#111;background:#f3f5f7}
+  .page{max-width:1500px;margin:auto;background:#fff;padding:18px;border:1px solid #bbb}
+  h1{font-size:22px;text-align:center;margin:0 0 8px}
+  .school{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+  .school label{display:flex;align-items:center;gap:5px;flex:1 1 220px;font-size:14px}
+  input,textarea{font:inherit;min-width:0;width:100%;border:0;border-bottom:1px dotted #444;padding:4px;background:transparent;text-transform:uppercase}
+  input, textarea, button, select {font-family:"Times New Roman",serif}
+  .print-repeat-header{display:none}
+  .table-wrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:1250px;table-layout:fixed}
+  th,td{border:1px solid #444;text-align:center;padding:4px;height:43px;overflow-wrap:anywhere}
+  td select.school-select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-image:none!important;width:100%;min-width:0;border:0;outline:0;box-shadow:none;background-color:transparent;font-family:"Times New Roman",serif;text-align:center;text-transform:uppercase;padding:2px 0;white-space:normal;overflow:hidden;text-overflow:clip;border-radius:0}
+  td select.school-select:focus{background:#f4f8ff;background-image:none!important;outline:none;box-shadow:none}
+  td select.school-select::-ms-expand{display:none}
+  th{background:#dceaf7;font-size:12px}
+  td input{border:0;text-align:center;width:100%;min-width:0;font-size:12px;padding:2px 1px;white-space:nowrap;overflow:hidden;text-overflow:clip}
+  td input,td select.school-select{display:block;max-width:100%;line-height:1.15}
+  .school input{min-width:0;}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{border:0;border-radius:5px;padding:9px 14px;background:#1757a6;color:#fff;font-weight:600;font-size:14px}
+  button.secondary{background:#4d5966}
+  .signature-footer{display:flex;justify-content:flex-end;margin-top:28px;page-break-inside:avoid}
+  .headmaster-sign{width:260px;text-align:center;font-size:14px;line-height:1.8}
+  .sign-space{height:38px}
+  @media print{
+    body{background:#fff;margin:0;padding:0}
+    .actions{display:none!important}
+    .print-repeat-header{display:block;position:static;width:100%;background:#fff;text-align:center;padding:0 1mm 2mm;font-family:"Times New Roman",serif;z-index:auto}
+    .print-repeat-header h2{font-size:13px;line-height:1.2;margin:0 0 3px;padding:0}
+    .print-repeat-header .meta{display:flex;justify-content:space-between;gap:6px;font-size:9px;line-height:1.25;text-align:left;margin-bottom:3mm}
+    .school{display:none!important}
+    .page{padding-top:0}
+    body>.page>h1{display:none!important}
+    .table-wrap{margin-top:0;overflow:visible}
+    thead{display:table-header-group}
+    .print-repeat-header, .table-wrap, table{position:relative;top:auto}
+    .print-repeat-header{break-inside:avoid;page-break-inside:avoid}
+    tr{break-inside:avoid;page-break-inside:avoid}
+    .page{border:0;padding:0 2mm 2mm;max-width:none;margin:0}
+    .actions{display:none !important}
+    .signature-footer{margin-top:8px;break-inside:avoid;page-break-inside:avoid}
+    .headmaster-sign{font-size:11px;width:220px}
+    .sign-space{height:22px}
+    h1{font-size:16px;margin:0 0 2px;padding:0}
+    th{background:#ddd!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    table{min-width:0;width:100%}
+    th,td{font-size:8px;padding:2px;height:30px}
+    td input{font-size:8px}
+    td select.school-select{font-size:7px!important;appearance:none;-webkit-appearance:none;-moz-appearance:none;background-image:none!important;color:#000}
+    @page{size:A4 landscape;margin:5mm 5mm 6mm}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>बिहार सरकार — शिक्षक विवरणी एवं पदस्थापना / वेतन रजिस्टर</h1>
+  <div class="print-repeat-header" id="printRepeatHeader">
+    <h2>बिहार सरकार — शिक्षक विवरणी एवं पदस्थापना / वेतन रजिस्टर</h2>
+    <div class="meta"><span>विद्यालय: <b id="prSchool"></b></span><span>UDISE कोड: <b id="prUdise"></b></span><span>प्रखंड: <b id="prBlock"></b></span><span>जिला: <b id="prDistrict"></b></span></div>
+  </div>
+  <div class="school">
+    <label>विद्यालय का नाम <input id="schoolName" type="text"></label>
+    <label>UDISE कोड <input id="udise" type="text"></label>
+    <label>प्रखंड <input id="block" type="text"></label>
+    <label>जिला <input id="district" type="text" value="अरवल"></label>
+  </div>
+  <div class="actions">
+    <button onclick="addRow()">+ नई पंक्ति जोड़ें</button>
+    <button onclick="saveData()">डेटा सेव करें</button>
+    <button onclick="loadData()" class="secondary">सेव डेटा खोलें</button>
+    <button onclick="downloadPDF()" class="secondary">PDF डाउनलोड करें</button>
+    <button onclick="window.print()" class="secondary">प्रिंट करें</button>
+    <button onclick="clearRows()" class="secondary">सभी पंक्तियाँ साफ़ करें</button>
+  </div>
+  <div class="table-wrap">
+    <table id="register">
+      <thead><tr>
+        <th style="width:48px">क्र.सं.</th>
+        <th>शिक्षक का नाम</th>
+        <th style="width:170px">विद्यालय का नाम</th>
+        <th>कोटि / पदनाम</th>
+        <th>PRAN No. / GPF No.</th>
+        <th>ई-शिक्षाकोश ID</th>
+        <th>मोबाइल नं.</th>
+        <th>नियुक्ति तिथि</th>
+        <th>Basic Pay (₹)</th>
+        <th>HRA (₹)</th>
+        <th>हस्ताक्षर / टिप्पणी</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <div class="signature-footer">
+    <div class="headmaster-sign">
+      <div class="sign-space"></div>
+      <div>प्रधानाध्यापक का हस्ताक्षर</div>
+      <div>विद्यालय की मुहर</div>
+    </div>
+  </div>
+</div>
+<script>
+function downloadPDF(){
+  // ब्राउज़र सुरक्षा के कारण HTML से PDF फ़ाइल सीधे बिना अनुमति सेव नहीं हो सकती।
+  // यह सीधे प्रिंट डायलॉग खोलता है; वहाँ 'Save as PDF' चुनकर PDF सेव करें।
+  window.print();
+}
+
+const fields = 10;
+const schoolNames = ["B.M. HIGH SCHOOL PINJRAWAN", "HIGH SCHOOL KURTHA (ARWAL)", "M.S NIZAMPUR", "M.S PINJRAWAN", "M.S. BENIPUR", "M.S. IBRAHIMPUR- HINDI", "M.S. KAITHA LODIPUR", "M.S. MEDANIPUR BARAHIA", "M.S.KURTHA", "M.S.LARI", "M.S.MANIKPUR", "M.S.MUBARAKPUR", "M.S.NARHI", "M.S.NIGHWAN", "M.S.TAKIYA KURTHA", "N.P.S AZAD BIGHA", "N.P.S BHATTU BIGHA", "N.P.S KURKURI", "N.P.S MATHURAPUR KURTHA", "N.P.S RANA NAGAR", "N.P.S SACHAI SOUTH", "N.P.S.SIKARIYA", "NAV. P.S MADARPUR", "NAV. P.S. BIJRUKH", "NAV. P.S. MAHADEV BIGHA", "NAV. P.S. PINJARAWAN MATHIYA", "NAV. P.S. PURANDARPUR", "NAV. P.S. SURA", "NAV. P.S. VISHUNIBIGHA", "NAV. P.S. VISHUNPURA", "NAV.P.S BHOLA BIGAHA RATAN BIGHA", "NAV.P.S GOKHULPUR", "NAV.P.S. BELDARI BIGHA", "NAV.P.S. BISHUNPUR BHATBIGHA", "NAV.P.S. FARIDPUR", "NAV.P.S. JAGDISHPUR", "NAV.P.S. KRIPA BIGHA", "NAV.P.S. LALACHAK", "NAV.P.S. MANEPAKAD", "NAV.P.S. SALEPUR", "NAV.P.S.BAAIDH BIGHA", "NPS PANTIT", "NPS. AZADNAGAR MUSAHRI", "NPS. CHIRARI BIGHA", "NPS. MAHMADPUR", "NPS. SAHLEPUR HARIJAN TOLA", "P.S DHONDHRA", "P.S SABLAK SARAI", "P.S. DAKRA", "P.S. SAHVAJPUR", "P.S.ALAWALPUR", "P.S.BABHANA LODIPUR", "P.S.CHULHANBIGHA", "P.S.DAKRA-URDU", "P.S.DARHETA", "P.S.FULSATHAR", "P.S.GANGAPUR-URDU", "P.S.HELALPUR", "P.S.IBRAHIMPUR DIH", "P.S.IBRAHIMPUR-URDU", "P.S.KAMARIYA", "P.S.KODMARAI-URDU", "P.S.KONI", "P.S.KUBRI", "P.S.LARI-GIRLS", "P.S.MAKHDUMPUR", "P.S.MANIKPUR", "P.S.NADAURA", "P.S.NAYANSUKH BIGHA", "P.S.PIRHI", "P.S.SACHAI", "P.S.SAIDPUR", "P.S.SAJEEWAN DARGAH-URDU", "P.S.SARAIA", "P.S.SEVABIGHA", "P.S.SHAHGANJ", "P.S.SHAHOPUR", "RAJKIYAKRIT SARVODAYA HIGH SCHOOL LARI", "RAM RATAN HIGH SCHOOL SACHAI", "SAHDEO PRASAD GUPTA HIGH SCHOOL TAKEYA", "U.M.S GANGEYA", "U.M.S KEMDARCHAK", "U.M.S KHAIRA DIH", "U.M.S MEROGANJ", "U.M.S PAINATHI URDU", "U.M.S TALI", "U.M.S.BASANTPUR", "U.M.S.CHHATOI", "U.M.S.GAHARPUR", "U.M.S.GAUHARA-URDU", "U.M.S.KHAIRA", "U.M.S.MANIKPUR KOTHIYA", "U.M.S.MUSARHI", "U.M.S.NASIRANA", "U.M.S.PARTAPPUR", "U.M.S.SIMUARA", "UCHCH MADHYAMIK VIDYALAYA DHAMAUL", "UCHCH MADHYAMIK VIDYALAYA MANIKPUR", "UCHH MADHYAMIK VIDYALAY BASANTPUR", "UCHH MADHYAMIK VIDYALAY BENIPUR", "UCHH MADHYAMIK VIDYALAY IBRAHIMPUR-HINDI", "UCHH MADHYAMIK VIDYALAY MEDNIPUR BARAHIA", "UP. M. S. BAHABALPUR", "UP. M. S. BARA", "UP. M. S. RAJEPUR- HINDI", "UP. M. S. UTRANWAN", "UP. M.S. KODMARAI", "UP.M.S AHMADPUR HARNA", "UP.M.S. DHAMAUL", "UTKRAMIT MADHYAMIK SCHOOL KAITHA LODIPUR"];
+const tbody = document.getElementById('rows');
+document.querySelectorAll('.school input').forEach(input => {
+  input.style.textTransform='uppercase';
+  fitText(input,input.value,14,7);
+  input.addEventListener('input', () => {
+    const start=input.selectionStart, end=input.selectionEnd;
+    input.value=input.value.toUpperCase();
+    fitText(input,input.value,14,7);
+    try{input.setSelectionRange(start,end)}catch(e){}
+  });
+});
+function fitText(input, value=input.value, base=12, min=5.5){
+  const len=String(value ?? '').length;
+  // Shrink long entries so they stay inside their own column.
+  let size=base;
+  if(len>12) size=Math.max(min, base-(len-12)*0.32);
+  if(input.tagName==='SELECT' && input.classList.contains('school-select')) size=Math.max(min, len>35?6.2:len>28?7:len>20?8.5:10.5);
+  input.style.fontSize=size+'px';
+  input.style.maxWidth='100%';
+}
+function addRow(values=[]){
+  const tr=document.createElement('tr');
+  const num=document.createElement('td'); tr.appendChild(num);
+  for(let i=0;i<fields;i++){
+    const td=document.createElement('td');
+    let input;
+    if(i===1){
+      input=document.createElement('select');
+      input.className='school-select'; input.style.fontSize='11px'; input.title='विद्यालय का नाम चुनें';
+      input.setAttribute('aria-label','विद्यालय का नाम');
+      const blank=document.createElement('option'); blank.value=''; blank.textContent=''; input.appendChild(blank);
+      schoolNames.forEach(name=>{const option=document.createElement('option');option.value=name;option.textContent=name;input.appendChild(option);});
+      input.addEventListener('change',()=>{input.title=input.value; fitText(input,input.value,11,6);});
+      const current=String(values[i] ?? '').toUpperCase();
+      if(current && !schoolNames.includes(current)){const option=document.createElement('option');option.value=current;option.textContent=current;input.appendChild(option);}
+      input.value=current; input.title=current; fitText(input,current,11,6);
+    }else if(i===2){
+      input=document.createElement('select');
+      input.className='school-select'; input.style.fontSize='11px'; input.title='कोटि चुनें';
+      input.setAttribute('aria-label','कोटि / पदनाम');
+      const categories=['GOB','SSA','TRE-01','TRE-02','TRE-03(1-5)','TRE-03(6-8)','HEAD TEACHER','EXCLUSIVE TEACHER'];
+      const blank=document.createElement('option'); blank.value=''; blank.textContent=''; input.appendChild(blank);
+      categories.forEach(category=>{const option=document.createElement('option');option.value=category;option.textContent=category;input.appendChild(option);});
+      const current=String(values[i] ?? '').toUpperCase();
+      if(current && !categories.includes(current)){const option=document.createElement('option');option.value=current;option.textContent=current;input.appendChild(option);}
+      input.value=current; input.title=current; fitText(input,current,11,6);
+      input.addEventListener('change',()=>fitText(input,input.value,11,6));
+    }else{
+      input=document.createElement('input');
+      input.type='text'; input.autocomplete='off';
+      input.setAttribute('aria-label','पंक्ति विवरण '+(i+1));
+      input.value=String(values[i] ?? '').toUpperCase();
+      fitText(input,input.value,12,5.5);
+      input.addEventListener('input', () => {
+        const start=input.selectionStart, end=input.selectionEnd;
+        input.value=input.value.toUpperCase();
+        fitText(input,input.value,12,5.5);
+        try{input.setSelectionRange(start,end)}catch(e){}
+      });
+    }
+    td.appendChild(input); tr.appendChild(td);
+  }
+  tbody.appendChild(tr); renumber();
+}
+function renumber(){[...tbody.rows].forEach((r,i)=>r.cells[0].textContent=i+1);}
+function saveData(){
+  const data={
+    schoolName:document.getElementById('schoolName').value,
+    udise:document.getElementById('udise').value,
+    block:document.getElementById('block').value,
+    district:document.getElementById('district').value,
+    rows:[...tbody.rows].map(r=>[...r.querySelectorAll('input,select')].map(x=>x.value))
+  };
+  try{localStorage.setItem('biharTeacherPostingRegister',JSON.stringify(data));alert('डेटा इसी ब्राउज़र में सेव हो गया।');}
+  catch(e){alert('इस ब्राउज़र में डेटा सेव नहीं हो सका। कृपया ब्राउज़र की स्टोरेज सेटिंग जाँचें।');}
+}
+function loadData(){
+  const raw=localStorage.getItem('biharTeacherPostingRegister');
+  if(!raw){alert('कोई सेव डेटा नहीं मिला।');return;}
+  const data=JSON.parse(raw);
+  ['schoolName','udise','block','district'].forEach(k=>document.getElementById(k).value=data[k]||'');
+  tbody.innerHTML='';
+  (data.rows||[]).forEach(row=>addRow(row));
+  if(!tbody.rows.length) for(let i=0;i<15;i++) addRow();
+  alert('सेव डेटा खोल लिया गया।');
+}
+function clearRows(){
+  if(!confirm('क्या आप सभी पंक्तियों का डेटा हटाना चाहते हैं? पहले सेव कर लें।'))return;
+  tbody.innerHTML=''; for(let i=0;i<15;i++) addRow();
+}
+for(let i=0;i<15;i++) addRow();
+window.addEventListener('beforeprint',()=>{
+  document.getElementById('prSchool').textContent=document.getElementById('schoolName').value;
+  document.getElementById('prUdise').textContent=document.getElementById('udise').value;
+  document.getElementById('prBlock').textContent=document.getElementById('block').value;
+  document.getElementById('prDistrict').textContent=document.getElementById('district').value;
+});
+</script>
+</body>
+</html>
